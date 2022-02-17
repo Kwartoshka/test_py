@@ -24,7 +24,13 @@ class Server:
     def __init__(self, state: SharedState):
         self.state = state
 
+    async def _check_queue(self):
+        name = asyncio.current_task().get_name()
+        while str(int(name)-1) in {task.get_name() for task in asyncio.all_tasks()}:
+            await asyncio.sleep(0.01)
+
     async def handle_request(self, value: int):
+        await self._check_queue()
         await self.state.modify(value)
 
 
@@ -34,6 +40,7 @@ async def main():
 
     # имитируем запуск 10 запросов к серверу
     requests = [server.handle_request(value) for value in range(10)]
+    requests = [asyncio.create_task(coroutine, name=str(number)) for number, coroutine in enumerate(requests)]
     await asyncio.gather(*requests)
 
     '''

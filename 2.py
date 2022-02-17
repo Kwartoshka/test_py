@@ -1,8 +1,10 @@
-from functools import wraps
-
-
 def cls_method_decorator(param: int):
-    pass
+    def decorator(method_to_decorate):
+        def wrapper(self, *args, **kwargs):
+            self.increment_var(increment=param)
+            return method_to_decorate(self)
+        return wrapper
+    return decorator
 
 
 class SomeClass:
@@ -25,11 +27,11 @@ class SomeClass:
     Вам дан класс SomeClass, содержащий целочисленную переменную some_var
     У него есть вспомогательный метод 'increment_var', 
     увеличивающий значение данной переменной (some_var) на указанную величину
-    
+
     Ваша задача заключается в том, чтобы реализовать декоратор (cls_method_decorator) 
     Внутри он должен модифицировать some_var через вызов increment_var с указанным декоратору значением
-    
-    
+
+
     """
 
 
